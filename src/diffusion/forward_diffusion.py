@@ -1,0 +1,34 @@
+'''
+Note :  This script is taken from part of https://huggingface.co/blog/annotated-diffusion
+        and modified by Ganga Meghanath.
+'''
+
+import torch
+
+from data_loader import reverse_transform
+
+def extract(a, t, x_shape):
+    batch_size = t.shape[0]
+    out = a.gather(-1, t.cpu())
+    return out.reshape(batch_size, *((1,) * (len(x_shape) - 1))).to(t.device)
+
+# forward diffusion
+def q_sample(x_start, t, sqrt_alphas_cumprod, sqrt_one_minus_alphas_cumprod, noise=None):
+    if noise is None:
+        noise = torch.randn_like(x_start)
+
+    sqrt_alphas_cumprod_t = extract(sqrt_alphas_cumprod, t, x_start.shape)
+    sqrt_one_minus_alphas_cumprod_t = extract(
+        sqrt_one_minus_alphas_cumprod, t, x_start.shape
+    )
+
+    return sqrt_alphas_cumprod_t * x_start + sqrt_one_minus_alphas_cumprod_t * noise
+
+def get_noisy_image(x_start, t):
+  # add noise
+  x_noisy = q_sample(x_start, t=t)
+
+  # turn back into PIL image
+  noisy_image = reverse_transform(x_noisy.squeeze())
+
+  return noisy_image
