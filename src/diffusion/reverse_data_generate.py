@@ -47,6 +47,8 @@ def p_sample_loop(model, variance_dict, shape, T):
         img = p_sample(model, img, torch.full((b,), i, device=device, dtype=torch.long), i, variance_dict)
         if i%50==0:
             imgs.append(img.cpu())
+    imgs.append(img.cpu())
+    
     return imgs
 
 @torch.no_grad()
