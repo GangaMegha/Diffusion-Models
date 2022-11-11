@@ -7,28 +7,25 @@ from torchvision.utils import save_image
 
 from helper_train import p_losses, num_to_groups
 from ..diffusion.reverse_data_generate import sample
-from ..data_loader import load_data
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 class Trainer:
     """Class that handles training"""
-    def __init__(self, model, data, train_cfg, model_name, dataset_name):
+    def __init__(self, model, train_cfg, model_name, dataset_name, train_dataloader, test_dataloader):
         self.model = model.to(device)
-        self.data = data
         self.optimizer = torch.optim.Adam(self.model.parameters(), 
                                         lr=train_cfg.get('lr', 1e-3), 
                                         weight_decay=train_cfg.get('weight_decay', 0.0))
-        self.loss = torch.nn.PoissonNLLLoss(log_input=False)
         self.model_name = model_name
         self.dataset_name = dataset_name
         self.cfg = train_cfg
 
+        self.train_dataloader = train_dataloader
+        self.test_dataloader = test_dataloader
+
     def train(self):
-        grayscale = True if self.dataset_name in ("fashion_mnist") else False            
-        train_dataloader = load_data(self.dataset_name, phase="train", grayscale=True, shuffle=True)
-        test_dataloader = load_data(self.dataset_name, phase="test", grayscale=True, shuffle=False)
-        
+
         min_val_loss = 1e8
         last_improv = -1
 
@@ -36,7 +33,7 @@ class Trainer:
         
         for epoch in range(self.cfg.get('epochs', 5)):
             train_loss = 0
-            for step, batch in enumerate(train_dataloader):
+            for step, batch in enumerate(self.train_dataloader):
                 self.optimizer.zero_grad()
 
                 batch_size = batch["pixel_values"].shape[0]
@@ -55,19 +52,13 @@ class Trainer:
                 self.optimizer.step()
 
             # save generated images
-            batches = num_to_groups(4, batch_size)
-            all_images_list = list(map(lambda n: sample(self.model, image_size=DATASET[self.dataset_name]["image_size"]), channels=DATASET[self.dataset_name]["channels"]), batches))
-            all_images = torch.cat(all_images_list, dim=0)
-            all_images = (all_images + 1) * 0.5
-            save_image(all_images, str(RESULT_PATH / f'sample-{epoch}.png'), nrow = 6)
-
             all_images_list = sample(self.model, DATASET[self.dataset_name]["image_size"], batch_size=16, channels=DATASET[self.dataset_name]["channels"])
             all_images = torch.cat(all_images_list, dim=0)
             all_images = (all_images + 1) * 0.5
-            save_image(all_images, str(RESULT_PATH / f'sample-{epoch}.png'), nrow=16)
+            save_image(all_images, os.path.join(RESULT_PATH, f'{self.dataset_name}/sample-{epoch}.png'), nrow=16)
 
             # End of epoch Validation loss
-            val_loss = self.score(test_dataloader)
+            val_loss = self.score(self.test_dataloader)
             print(f"\nEnd of Epoch {epoch} Train loss = {train_loss}, Val_loss = {val_loss}\n")
             train_loss_list.append(train_loss)
             val_loss_list.append(val_loss)

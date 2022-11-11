@@ -44,7 +44,8 @@ def p_sample_loop(model, shape, T):
     
     for i in tqdm(reversed(range(0, T)), desc='sampling loop time step', total=T):
         img = p_sample(model, img, torch.full((b,), i, device=device, dtype=torch.long), i)
-        imgs.append(img.cpu())
+        if i%50==0:
+            imgs.append(img.cpu())
     return imgs
 
 @torch.no_grad()
