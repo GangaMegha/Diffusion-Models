@@ -1,12 +1,13 @@
 '''
 Note : This script is taken from part of https://huggingface.co/blog/annotated-diffusion
 '''
-
+import sys
+sys.path.append("./Diffusion-Models/src/")
 
 from einops import rearrange
 from torch import nn
 
-from helper_model import exists
+from models.utils.helper_model import exists
 
 
 def Upsample(dim):

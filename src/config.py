@@ -42,14 +42,18 @@ class LOGGING(Enum):
 LEVEL = LOGGING.DEBUG
 
 CONFIG = {
-    "unet" : {
+    "Unet" : {
         "fashion_mnist" : {
+            "image_size" : 28,
+            "channels" : 1,
+            "batch_size" : 128,
             "T" : 200,
             "epochs" : 10,
             "patience" : 5,
             "loss_type" : "huber",
             "lr" : 1e-3,
             "weight_decay" : 0,
+            "dim_mults" : (1, 2, 4,),
         },
         "mnist" : {
             "T" : 200,

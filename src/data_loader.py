@@ -4,13 +4,14 @@ Note : This script is taken from part of https://huggingface.co/blog/annotated-d
 
 import numpy as np
 from torchvision import transforms 
-
 from datasets import load_dataset
+
 from torch.utils.data import DataLoader
 
-from .config import DATASET
+from config import DATASET
 
-def model_transform(image_size=128):
+
+def model_transform():
     transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
@@ -29,14 +30,14 @@ def reverse_transform():
     return transform
 
 def transforms_grayscale(data):
-   data["pixel_values"] = [model_transform(image.convert("L")) for image in data["image"]]
+   data["pixel_values"] = [model_transform()(image.convert("L")) for image in data["image"]]
    del data["image"]
 
    return data
 
 def transforms_all(data):
-   data["pixel_values"] = [model_transform(image) for image in data["image"]]
-   del data["image"]
+   data["pixel_values"] = [model_transform()(image) for image in data["img"]]
+   del data["img"]
 
    return data
 

@@ -1,38 +1,45 @@
 '''
-Note : This script is taken from part of https://huggingface.co/blog/annotated-diffusion
+Note : Unet class is taken from part of https://huggingface.co/blog/annotated-diffusion
+       and modified
 '''
+import sys
+sys.path.append("./Diffusion-Models/src/") 
 
 from functools import partial
 
 import torch
 from torch import nn
 
-from utils.helper_model import default, exists
-from utils.blocks_conv import ConvNextBlock, ResnetBlock, Downsample, Upsample
-from utils.blocks_attn import LinearAttention, Attention
-from utils.blocks_other import SinusoidalPositionEmbeddings, PreNorm, Residual
+from models.utils.helper_model import default, exists
+from models.utils.blocks_conv import ConvNextBlock, ResnetBlock, Downsample, Upsample
+from models.utils.blocks_attn import LinearAttention, Attention
+from models.utils.blocks_other import SinusoidalPositionEmbeddings, PreNorm, Residual
 
 
 class Unet(nn.Module):
-    def __init__(
-        self,
-        dim,
-        init_dim=None,
-        out_dim=None,
-        dim_mults=(1, 2, 4, 8),
-        channels=3,
-        with_time_emb=True,
-        resnet_block_groups=8,
-        use_convnext=True,
-        convnext_mult=2,
-    ):
+    def __init__(self, cfg):
         super().__init__()
 
         # determine dimensions
-        self.channels = channels
+        try:
+            dim = cfg.get('image_size')
+        except ValueError:
+            print("image_size not defined in config")
+        except:
+            print("Something else went wrong")
+
+        init_dim=cfg.get('init_dim', None)
+        out_dim=cfg.get('out_dim', None)
+        dim_mults = cfg.get('dim_mults', (1, 2, 4, 8))
+        self.channels = cfg.get('channels', 3)
+        with_time_emb=cfg.get('with_time_emb', True)
+        resnet_block_groups=cfg.get('resnet_block_groups', 8)
+        use_convnext=cfg.get('use_convnext', True)
+        convnext_mult=cfg.get('convnext_mult', 2)
+        
 
         init_dim = default(init_dim, dim // 3 * 2)
-        self.init_conv = nn.Conv2d(channels, init_dim, 7, padding=3)
+        self.init_conv = nn.Conv2d(self.channels, init_dim, 7, padding=3)
 
         dims = [init_dim, *map(lambda m: dim * m, dim_mults)]
         in_out = list(zip(dims[:-1], dims[1:]))
@@ -93,7 +100,7 @@ class Unet(nn.Module):
                 )
             )
 
-        out_dim = default(out_dim, channels)
+        out_dim = default(out_dim, self.channels)
         self.final_conv = nn.Sequential(
             block_klass(dim, dim), nn.Conv2d(dim, out_dim, 1)
         )

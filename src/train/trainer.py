@@ -1,12 +1,16 @@
-from ..config import DATASET, CHECKPOINT_PATH, RESULT_PATH
+import sys
+sys.path.append("./Diffusion-Models/src/") 
+
+from config import DATASET, CHECKPOINT_PATH, RESULT_PATH
 
 import os 
 
 import torch
 from torchvision.utils import save_image
 
-from helper_train import p_losses, num_to_groups
-from ..diffusion.reverse_data_generate import sample
+from train.helper_train import p_losses, num_to_groups
+from diffusion.reverse_data_generate import sample
+from diffusion.var_schedule import alpha_beta
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -23,6 +27,8 @@ class Trainer:
 
         self.train_dataloader = train_dataloader
         self.test_dataloader = test_dataloader
+
+        self.variance_dict = alpha_beta(self.cfg.get('T', 200), schedule=self.cfg.get("var_schedule", "linear"))
 
     def train(self):
 
@@ -42,7 +48,7 @@ class Trainer:
                 # Algorithm 1 line 3: sample t uniformally for every example in the batch
                 t = torch.randint(0, self.cfg.get('T', 200), (batch_size,), device=device).long()
 
-                loss = p_losses(self.model, batch, t, self.cfg.get('loss_type', "huber"))
+                loss = p_losses(self.model, batch, t, self.variance_dict, self.cfg.get('loss_type', "huber"), None)
                 train_loss += loss.item()    
 
                 if step % 100 == 0:
@@ -52,7 +58,7 @@ class Trainer:
                 self.optimizer.step()
 
             # save generated images
-            all_images_list = sample(self.model, DATASET[self.dataset_name]["image_size"], batch_size=16, channels=DATASET[self.dataset_name]["channels"])
+            all_images_list = sample(self.model, self.variance_dict, self.cfg)
             all_images = torch.cat(all_images_list, dim=0)
             all_images = (all_images + 1) * 0.5
             save_image(all_images, os.path.join(RESULT_PATH, f'{self.dataset_name}/sample-{epoch}.png'), nrow=16)
