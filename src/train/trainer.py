@@ -58,7 +58,7 @@ class Trainer:
                 self.optimizer.step()
 
             # save generated images
-            all_images_list = sample(self.model, self.variance_dict, self.cfg)
+            all_images_list = sample(self.model, self.variance_dict, self.cfg, sample_cnt=16)
             all_images = torch.cat(all_images_list, dim=0)
             all_images = (all_images + 1) * 0.5
             save_image(all_images, os.path.join(RESULT_PATH, f'{self.dataset_name}/sample-{epoch}.png'), nrow=16)

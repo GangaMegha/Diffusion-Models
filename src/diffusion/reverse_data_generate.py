@@ -50,5 +50,5 @@ def p_sample_loop(model, variance_dict, shape, T):
     return imgs
 
 @torch.no_grad()
-def sample(model, variance_dict, cfg):
-    return p_sample_loop(model, variance_dict, shape=(cfg.get('batch_size'), cfg.get('channels'), cfg.get('image_size'), cfg.get('image_size')), T=cfg.get('T'))
+def sample(model, variance_dict, cfg, sample_cnt=16):
+    return p_sample_loop(model, variance_dict, shape=(sample_cnt, cfg.get('channels'), cfg.get('image_size'), cfg.get('image_size')), T=cfg.get('T'))
