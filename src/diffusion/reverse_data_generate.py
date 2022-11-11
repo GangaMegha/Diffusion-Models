@@ -44,7 +44,7 @@ def p_sample_loop(model, variance_dict, shape, T):
     imgs = []
     
     for i in tqdm(reversed(range(0, T)), desc='sampling loop time step', total=T):
-        img = p_sample(model, img, torch.full((b,), i, device=device, dtype=torch.long), i)
+        img = p_sample(model, img, torch.full((b,), i, device=device, dtype=torch.long), i, variance_dict)
         if i%50==0:
             imgs.append(img.cpu())
     return imgs

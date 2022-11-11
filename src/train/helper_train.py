@@ -12,7 +12,7 @@ def p_losses(denoise_model, x_start, t, variance_dict, loss_type="l1", noise=Non
     if noise is None:
         noise = torch.randn_like(x_start)
 
-    x_noisy = q_sample(x_start, t, variance_dict["sqrt_alphas_cumprod"], variance_dict["sqrt_one_minus_alphas_cumprod"], noise=noise)
+    x_noisy = q_sample(x_start, t, variance_dict["sqrt_alphas_cumprod"], variance_dict["sqrt_one_minus_alphas_cumprod"], noise)
     predicted_noise = denoise_model(x_noisy, t)
 
     if loss_type == 'l1':

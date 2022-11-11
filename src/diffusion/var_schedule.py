@@ -4,6 +4,7 @@ Note :  This script is initially taken from part of https://huggingface.co/blog/
 '''
 
 import torch
+import torch.nn.functional as F
 
 def cosine_beta_schedule(T, s=0.008):
     """

@@ -1,8 +1,11 @@
 from logger import setup_logger
 import logging
 import gc
+import os
 
-from config import LEVEL, TRAIN, MODEL, MODEL_TYPE, DATASET_NAME, CONFIG, LOG_PATH
+import pandas as pd
+
+from config import LEVEL, TRAIN, MODEL, MODEL_TYPE, DATASET_NAME, CONFIG, CHECKPOINT_PATH, RESULT_PATH, LOG_PATH
 from train.trainer import Trainer
 from data_loader import load_data
 
@@ -53,7 +56,7 @@ def main():
         # Logging Training Losses
         train_log = pd.DataFrame(train_log)
         train_log.to_csv(
-            os.path.join(LOG_PATH, f'{MODEL_TYPE.value}_{DATASET_NAME}_train_log.csv')
+            os.path.join(LOG_PATH, f'{DATASET_NAME}/{MODEL_TYPE.value}_train_log.csv')
             )
 
         # Delete models and use garbage collection to clear memory
@@ -62,5 +65,15 @@ def main():
         gc.collect()
 
 if __name__ == "__main__":
+
+    if not os.path.exists(os.path.join(CHECKPOINT_PATH, f'{DATASET_NAME}/')):
+        os.makedirs(os.path.join(CHECKPOINT_PATH, f'{DATASET_NAME}/'))
+
+    if not os.path.exists(os.path.join(RESULT_PATH, f'{DATASET_NAME}/')):
+        os.makedirs(os.path.join(RESULT_PATH, f'{DATASET_NAME}/'))
+
+    if not os.path.exists(os.path.join(LOG_PATH, f'{DATASET_NAME}/')):
+        os.makedirs(os.path.exists(os.path.join(LOG_PATH, f'{DATASET_NAME}/'))
+
     # Call Main
     main()

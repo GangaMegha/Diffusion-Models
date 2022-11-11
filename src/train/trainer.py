@@ -91,7 +91,7 @@ class Trainer:
             # Algorithm 1 line 3: sample t uniformally for every example in the batch
             t = torch.randint(0, self.cfg.get('T', 200), (batch_size,), device=device).long()
 
-            loss += p_losses(self.model, batch, t, self.cfg.get('loss_type', "huber")).item()
+            loss += p_losses(self.model, batch, t, self.variance_dict, self.cfg.get('loss_type', "huber"), None).item()
 
         self.model.train()
 
@@ -102,4 +102,4 @@ class Trainer:
             "state_dict": self.model.state_dict(),
             "optim_state": self.optimizer.state_dict(),
         }
-        torch.save(checkpoint, os.path.join(CHECKPOINT_PATH, f'{self.model_name}_{self.dataset_name}.ckpt'))
+        torch.save(checkpoint, os.path.join(CHECKPOINT_PATH, f'{self.dataset_name}/{self.model_name}.ckpt'))
