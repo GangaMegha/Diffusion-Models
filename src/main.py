@@ -73,7 +73,7 @@ if __name__ == "__main__":
         os.makedirs(os.path.join(RESULT_PATH, f'{DATASET_NAME}/'))
 
     if not os.path.exists(os.path.join(LOG_PATH, f'{DATASET_NAME}/')):
-        os.makedirs(os.path.exists(os.path.join(LOG_PATH, f'{DATASET_NAME}/'))
+        os.makedirs(os.path.join(LOG_PATH, f'{DATASET_NAME}/'))
 
     # Call Main
     main()
