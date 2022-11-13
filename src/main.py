@@ -4,6 +4,7 @@ import gc
 import os
 
 import pandas as pd
+import numpy as np
 
 from config import LEVEL, TRAIN, MODEL, MODEL_TYPE, DATASET_NAME, CONFIG, CHECKPOINT_PATH, RESULT_PATH, LOG_PATH
 from train.trainer import Trainer
@@ -54,7 +55,7 @@ def main():
 
         logger.debug("Saving Training Stats")
         # Logging Training Losses
-        train_log = pd.DataFrame(train_log)
+        train_log = pd.DataFrame(pd.DataFrame(np.array(train_log).T, columns=["train_loss", "val_loss", "FID", "IS"]))
         train_log.to_csv(
             os.path.join(LOG_PATH, f'{DATASET_NAME}/{MODEL_TYPE.value}_train_log.csv')
             )
