@@ -20,17 +20,17 @@ logger = logging.getLogger('main')
 logger = setup_logger(logger, '', '', '%(levelname)s | %(name)s | %(message)s', LEVEL.value)
 
 def main():
+    # Load model config
+    cfg = CONFIG[MODEL_TYPE.value][DATASET_NAME]
+
     # Extract data
     logger.debug("Loading Data")
-    grayscale = True if DATASET_NAME in ("fashion_mnist", "mnist") else False            
-    train_dataloader = load_data(DATASET_NAME, phase="train", grayscale=grayscale, shuffle=True)
-    test_dataloader = load_data(DATASET_NAME, phase="test", grayscale=grayscale, shuffle=False)
+    train_dataloader = load_data(DATASET_NAME, phase="train", grayscale=cfg["grayscale"], shuffle=True)
+    test_dataloader = load_data(DATASET_NAME, phase="test", grayscale=cfg["grayscale"], shuffle=False)
     logger.debug("Successfully Loaded Data")
 
     if TRAIN:
         logger.debug("Loading Model")
-        # Load model config
-        cfg = CONFIG[MODEL_TYPE.value][DATASET_NAME]
         # Create Model
         model = Model(cfg)
         logger.debug("Successfully Loaded Model")

@@ -46,6 +46,7 @@ CONFIG = {
         "fashion_mnist" : {
             "image_size" : 28,
             "channels" : 1,
+            "grayscale" : True,
             "batch_size" : 128,
             "T" : 200,
             "epochs" : 10,
@@ -56,20 +57,30 @@ CONFIG = {
             "dim_mults" : (1, 2, 4,),
         },
         "mnist" : {
+            "image_size" : 28,
+            "channels" : 1,
+            "grayscale" : True,
+            "batch_size" : 128,
             "T" : 200,
             "epochs" : 10,
             "patience" : 5,
             "loss_type" : "huber",
             "lr" : 1e-3,
             "weight_decay" : 0,
+            "dim_mults" : (1, 2, 4,),
         },
         "cifar10" : {
+            "image_size" : 32,
+            "channels" : 1,
+            "grayscale" : False,
+            "batch_size" : 128,
             "T" : 500,
             "epochs" : 10,
             "patience" : 5,
             "loss_type" : "huber",
             "lr" : 1e-3,
             "weight_decay" : 0,
+            "dim_mults" : (1, 2, 4,),
         }
     }
 }

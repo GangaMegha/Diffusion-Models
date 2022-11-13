@@ -1,8 +1,10 @@
 '''
 Note : This script is taken from part of https://huggingface.co/blog/annotated-diffusion
+        and modified by Ganga Meghanath
 '''
 
 import numpy as np
+import torch
 from torchvision import transforms 
 from datasets import load_dataset
 
@@ -14,18 +16,16 @@ from config import DATASET
 def model_transform():
     transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
-            transforms.ToTensor(),
+            transforms.ToTensor(), # Converts a PIL Image or numpy.ndarray (H x W x C) in the range [0, 255] to a torch.FloatTensor of shape (C x H x W) in the range [0.0, 1.0]
             transforms.Lambda(lambda t: (t * 2) - 1)
     ])
     return transform
 
 def reverse_transform():
     transform = transforms.Compose([
-        transforms.Lambda(lambda t: (t + 1) / 2),
-        transforms.Lambda(lambda t: t.permute(1, 2, 0)), # CHW to HWC
-        transforms.Lambda(lambda t: t * 255.),
-        transforms.Lambda(lambda t: t.numpy().astype(np.uint8)),
-        transforms.ToPILImage(),
+        transforms.Lambda(lambda t: (t + 1)  * 0.5),
+        transforms.Lambda(lambda t: t * 255),
+        transforms.Lambda(lambda t: t.to(dtype=torch.uint8))
     ])
     return transform
 

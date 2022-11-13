@@ -28,7 +28,7 @@ def get_noisy_image(x_start, t):
   # add noise
   x_noisy = q_sample(x_start, t=t)
 
-  # turn back into PIL image
+  # turn back into [0,255] CHW
   noisy_image = reverse_transform(x_noisy.squeeze())
 
   return noisy_image

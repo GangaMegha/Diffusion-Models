@@ -8,9 +8,13 @@ import os
 import torch
 from torchvision.utils import save_image
 
-from train.helper_train import p_losses, num_to_groups
+from train.helper_train import p_losses
 from diffusion.reverse_data_generate import sample
 from diffusion.var_schedule import alpha_beta
+
+from data_loader import reverse_transform
+
+from metrics import FID, IS
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -30,12 +34,15 @@ class Trainer:
 
         self.variance_dict = alpha_beta(self.cfg.get('T', 200), schedule=self.cfg.get("var_schedule", "linear"))
 
+        self.FID = FID()
+        self.IS = IS()
+
     def train(self):
 
         min_val_loss = 1e8
         last_improv = -1
 
-        train_loss_list, val_loss_list = [], []
+        train_loss_list, val_loss_list, FID_list, IS_list = [], []
         
         for epoch in range(self.cfg.get('epochs', 5)):
             train_loss = 0
@@ -51,23 +58,23 @@ class Trainer:
                 loss = p_losses(self.model, batch, t, self.variance_dict, self.cfg.get('loss_type', "huber"), None)
                 train_loss += loss.item()    
 
-                if step % 100 == 0:
-                    print("Loss:", loss.item())
-
                 loss.backward()
                 self.optimizer.step()
 
             # save generated images
-            all_images_list = sample(self.model, self.variance_dict, self.cfg, sample_cnt=16)
+            all_images_list = sample(self.model, self.variance_dict, self.cfg, sample_cnt=100)
             all_images = torch.cat(all_images_list, dim=0)
-            all_images = (all_images + 1) * 0.5
-            save_image(all_images, os.path.join(RESULT_PATH, f'{self.dataset_name}/sample-{epoch}.png'), nrow=16)
+            save_image(all_images[:16], os.path.join(RESULT_PATH, f'{self.dataset_name}/sample-{epoch+1}.png'), nrow=16)
 
             # End of epoch Validation loss
             val_loss = self.score(self.test_dataloader)
-            print(f"\nEnd of Epoch {epoch} Train loss = {train_loss}, Val_loss = {val_loss}\n")
+            print(f"\nEnd of Epoch {epoch+1} Train loss = {train_loss}, Val_loss = {val_loss}\n")
             train_loss_list.append(train_loss)
             val_loss_list.append(val_loss)
+
+            # Calculate FID and InceptionScore
+            FID_list.append(all_images, reverse_transform()(batch.cpu()), self.cfg["grayscale"])
+            IS_list.append(all_images, self.cfg["grayscale"])
 
             # Early stopping
             if val_loss < min_val_loss:
@@ -77,7 +84,7 @@ class Trainer:
             if (epoch - last_improv) > self.cfg.get('patience', 5):
                 break
 
-        return train_loss_list, val_loss_list
+        return train_loss_list, val_loss_list, FID_list, IS_list
     
     
     def score(self, dataloader):
