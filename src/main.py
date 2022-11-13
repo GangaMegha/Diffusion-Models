@@ -2,6 +2,7 @@ from logger import setup_logger
 import logging
 import gc
 import os
+import sys
 
 import pandas as pd
 import numpy as np
@@ -66,6 +67,15 @@ def main():
         gc.collect()
 
 if __name__ == "__main__":
+
+    if  'fashion_mnist' in sys.argv[1]:
+        DATASET_NAME = "fashion_mnist"
+    elif 'mnist' in sys.argv[1]:
+        DATASET_NAME = "mnist"
+    elif 'cifar10' in sys.argv[1]:
+        DATASET_NAME = "cifar10"
+    else:
+        sys.exit(0)
 
     if not os.path.exists(os.path.join(CHECKPOINT_PATH, f'{DATASET_NAME}/')):
         os.makedirs(os.path.join(CHECKPOINT_PATH, f'{DATASET_NAME}/'))
