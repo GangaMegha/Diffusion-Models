@@ -2,13 +2,9 @@
 Note : This script is taken from part of https://huggingface.co/blog/annotated-diffusion
         and modified by Ganga Meghanath
 '''
-import sys
-sys.path.append("./Diffusion-Models/src/") 
 
 import torch
 from tqdm.auto import tqdm
-
-from data_loader import reverse_transform
 
 def extract(a, t, x_shape):
     batch_size = t.shape[0]
@@ -50,7 +46,7 @@ def p_sample_loop(model, variance_dict, shape, T):
     for i in tqdm(reversed(range(0, T)), desc='sampling loop time step', total=T):
         img = p_sample(model, img, torch.full((b,), i, device=device, dtype=torch.long), i, variance_dict)
         if i%50==0:
-            imgs.append(reverse_transform()(img).cpu())
+            imgs.append(img.cpu())
     imgs.append(img.cpu())
     
     return imgs

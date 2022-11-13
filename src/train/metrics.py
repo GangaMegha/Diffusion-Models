@@ -45,4 +45,4 @@ class IS(nn.Module):
 
         self.IS.reset()
 
-        return val
+        return val[0]
