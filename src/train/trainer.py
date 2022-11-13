@@ -72,8 +72,14 @@ class Trainer:
             train_loss_list.append(train_loss)
             val_loss_list.append(val_loss)
 
+            # Early stopping
+            if val_loss < min_val_loss:
+                min_val_loss = val_loss
+                last_improv = epoch
+                self.save_checkpoint()
+
             # Calculate FID and InceptionScore
-            if val_loss < min_val_loss or epoch%5==0:
+            if epoch%5==0 or epoch==(n_epochs-1) or (epoch - last_improv) > self.cfg.get('patience', 5):
                 all_images_list = sample(self.model, self.variance_dict, self.cfg, sample_cnt=100)
                 all_images = reverse_transform()(torch.cat(all_images_list, dim=0))
                 FID_list.append(self.FID(all_images, reverse_transform()(batch.cpu()), self.cfg["grayscale"]))
@@ -83,12 +89,6 @@ class Trainer:
                 FID_list.append(-1)
                 IS_list.append(-1)
                 print(f"\nEnd of Epoch {epoch+1} Train loss = {train_loss}, Val_loss = {val_loss} \n")
-
-            # Early stopping
-            if val_loss < min_val_loss:
-                min_val_loss = val_loss
-                last_improv = epoch
-                self.save_checkpoint()
                 
             if (epoch - last_improv) > self.cfg.get('patience', 5):
                 break
