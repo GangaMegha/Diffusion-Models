@@ -117,8 +117,9 @@ class Trainer:
 
         return loss
     
-    def save_checkpoint(self):
+    def save_checkpoint(self, epoch):
         checkpoint = {
+            "epoch": epoch,
             "state_dict": self.model.state_dict(),
             "optim_state": self.optimizer.state_dict(),
         }
