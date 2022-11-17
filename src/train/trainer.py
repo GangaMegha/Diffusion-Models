@@ -76,7 +76,7 @@ class Trainer:
             if val_loss < min_val_loss:
                 min_val_loss = val_loss
                 last_improv = epoch
-                self.save_checkpoint()
+                self.save_checkpoint(epoch)
 
             # Calculate FID and InceptionScore
             if epoch%5==0 or epoch==(n_epochs-1) or (epoch - last_improv) > self.cfg.get('patience', 5):

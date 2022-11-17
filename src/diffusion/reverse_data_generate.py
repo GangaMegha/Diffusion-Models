@@ -1,6 +1,7 @@
 '''
 Note : This script is taken from part of https://huggingface.co/blog/annotated-diffusion
         and modified by Ganga Meghanath
+        Added code for sigma_t = beta_t or posterior variance
 '''
 
 import torch
@@ -12,7 +13,7 @@ def extract(a, t, x_shape):
     return out.reshape(batch_size, *((1,) * (len(x_shape) - 1))).to(t.device)
 
 @torch.no_grad()
-def p_sample(model, x, t, t_index, variance_dict):
+def p_sample(model, x, t, t_index, variance_dict, sigma_beta_t=False):
     betas_t = extract(variance_dict["betas"], t, x.shape)
     sqrt_one_minus_alphas_cumprod_t = extract(
         variance_dict["sqrt_one_minus_alphas_cumprod"], t, x.shape
@@ -28,7 +29,10 @@ def p_sample(model, x, t, t_index, variance_dict):
     if t_index == 0:
         return model_mean
     else:
-        posterior_variance_t = extract(variance_dict["posterior_variance"], t, x.shape)
+        if sigma_beta_t:
+            posterior_variance_t = extract(variance_dict["betas"], t, x.shape)
+        else:
+            posterior_variance_t = extract(variance_dict["posterior_variance"], t, x.shape)
         noise = torch.randn_like(x)
         # Algorithm 2 line 4:
         return model_mean + torch.sqrt(posterior_variance_t) * noise 

@@ -74,6 +74,8 @@ if __name__ == "__main__":
         DATASET_NAME = "mnist"
     elif 'cifar10' in sys.argv[1]:
         DATASET_NAME = "cifar10"
+    elif 'huggan/CelebA-faces' in sys.argv[1]:
+        DATASET_NAME = "huggan/CelebA-faces"
     else:
         sys.exit(0)
 

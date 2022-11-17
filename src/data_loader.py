@@ -17,6 +17,8 @@ def model_transform():
     transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(), # Converts a PIL Image or numpy.ndarray (H x W x C) in the range [0, 255] to a torch.FloatTensor of shape (C x H x W) in the range [0.0, 1.0]
+            # transforms.CenterCrop(128), # CelebA
+            # transforms.Resize(64),
             transforms.Lambda(lambda t: (t * 2) - 1)
     ])
     return transform
@@ -37,7 +39,7 @@ def transforms_grayscale(data):
 
 def transforms_all(data):
    data["pixel_values"] = [model_transform()(image) for image in data["img"]]
-   del data["img"]
+   del data["img"] # CelebA : image
 
    return data
 

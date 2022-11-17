@@ -1,6 +1,6 @@
 '''
 Note : Unet class is taken from part of https://huggingface.co/blog/annotated-diffusion
-       and modified
+       and modified by Ganga Meghanath
 '''
 import sys
 sys.path.append("./Diffusion-Models/src/") 

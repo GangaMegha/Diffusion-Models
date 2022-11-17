@@ -20,8 +20,12 @@ DATASET = {
             "image_size" : 32,
             "channels" : 3,
             "batch_size" : 128
-    }
-    
+    },
+    "huggan/CelebA-faces":{
+            "image_size" : 128,
+            "channels" : 3,
+            "batch_size" : 64
+    }  
 }
 DATASET_NAME = "fashion_mnist"
 
@@ -52,7 +56,7 @@ CONFIG = {
             "var_schedule" : "linear", # Choose from cosine, linear, quadratic, sigmoid
             "epochs" : 200,
             "patience" : 10,
-            "loss_type" : "huber",
+            "loss_type" : "huber", # Choose from l1, l2, huber, l2_weighted
             "lr" : 1e-3,
             "weight_decay" : 0,
             "dim_mults" : (1, 2, 4,),
@@ -72,16 +76,16 @@ CONFIG = {
             "weight_decay" : 0,
             "dim_mults" : (1, 2, 4,),
         },
-        "cifar10" : {
-            "image_size" : 32,
+        "huggan/CelebA-faces" : {
+            "image_size" : 128,
             "channels" : 3,
             "grayscale" : False,
-            "batch_size" : 128,
+            "batch_size" : 64,
             "T" : 1000,
             "var_schedule" : "linear", # Choose from cosine, linear, quadratic, sigmoid
-            "epochs" : 500,
+            "epochs" : 1000,
             "patience" : 10,
-            "loss_type" : "huber",
+            "loss_type" : "l1",
             "lr" : 1e-3,
             "weight_decay" : 0,
             "dim_mults" : (1, 2, 4, 8,),

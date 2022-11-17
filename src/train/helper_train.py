@@ -1,11 +1,13 @@
 '''
 Note : This script is taken from part of https://huggingface.co/blog/annotated-diffusion
+        and modified by Ganga Meghanath.
+        Added l2 loss with weight from original variance diffusion paper
 '''
 
 import torch
 import torch.nn.functional as F
 
-from diffusion.forward_diffusion import q_sample
+from diffusion.forward_diffusion import q_sample, extract
 
 
 def p_losses(denoise_model, x_start, t, variance_dict, loss_type="l1", noise=None):
@@ -21,6 +23,11 @@ def p_losses(denoise_model, x_start, t, variance_dict, loss_type="l1", noise=Non
         loss = F.mse_loss(noise, predicted_noise)
     elif loss_type == "huber":
         loss = F.smooth_l1_loss(noise, predicted_noise)
+    elif loss_type == "l2_weighted":
+        beta_t = extract(variance_dict["betas"], t)
+        sigma_t_2 = extract(variance_dict["posterior_variance"])
+        weight = (beta_t**2)/(2 * sigma_t_2 * (1-beta_t) * (1-extract(variance_dict["alphas_cumprod"])))
+        loss = weight*F.mse_loss(noise, predicted_noise)
     else:
         raise NotImplementedError()
 

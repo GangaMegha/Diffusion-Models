@@ -6,3 +6,6 @@ train_mnist:
 
 train_cifar10:
 	python3 ./src/main.py cifar10
+
+train_celebA:
+	python3 ./src/main.py huggan/CelebA-faces
