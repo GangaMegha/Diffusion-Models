@@ -39,7 +39,7 @@ def p_sample(model, x, t, t_index, variance_dict, sigma_beta_t=False):
 
 # Algorithm 2 but save all images:
 @torch.no_grad()
-def p_sample_loop(model, variance_dict, shape, T):
+def p_sample_loop(model, variance_dict, shape, T, every50=False):
     device = next(model.parameters()).device
 
     b = shape[0]
@@ -49,12 +49,12 @@ def p_sample_loop(model, variance_dict, shape, T):
     
     for i in tqdm(reversed(range(0, T)), desc='sampling loop time step', total=T):
         img = p_sample(model, img, torch.full((b,), i, device=device, dtype=torch.long), i, variance_dict)
-        if i%50==0:
+        if i%50==0 and every50:
             imgs.append(img.cpu())
     imgs.append(img.cpu())
     
     return imgs
 
 @torch.no_grad()
-def sample(model, variance_dict, cfg, sample_cnt=16):
-    return p_sample_loop(model, variance_dict, shape=(sample_cnt, cfg.get('channels'), cfg.get('image_size'), cfg.get('image_size')), T=cfg.get('T'))
+def sample(model, variance_dict, cfg, sample_cnt=16, every50=True):
+    return p_sample_loop(model, variance_dict, shape=(sample_cnt, cfg.get('channels'), cfg.get('image_size'), cfg.get('image_size')), T=cfg.get('T'), every50=every50)
