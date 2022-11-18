@@ -76,6 +76,20 @@ CONFIG = {
             "weight_decay" : 0,
             "dim_mults" : (1, 2, 4,),
         },
+        "cifar10" : {
+            "image_size" : 32,
+            "channels" : 3,
+            "grayscale" : False,
+            "batch_size" : 128,
+            "T" : 1000,
+            "var_schedule" : "linear", # Choose from cosine, linear, quadratic, sigmoid
+            "epochs" : 1000,
+            "patience" : 10,
+            "loss_type" : "huber",
+            "lr" : 1e-3,
+            "weight_decay" : 0,
+            "dim_mults" : (1, 2, 4, 8,),
+        },
         "huggan/CelebA-faces" : {
             "image_size" : 128,
             "channels" : 3,
