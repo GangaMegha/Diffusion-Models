@@ -57,6 +57,7 @@ CONFIG = {
             "epochs" : 200,
             "patience" : 10,
             "loss_type" : "huber", # Choose from l1, l2, huber, l2_weighted
+            "clip" : 1, # Choose weight clip value for l2_weighted
             "lr" : 1e-3,
             "weight_decay" : 0,
             "dim_mults" : (1, 2, 4,),
@@ -72,6 +73,7 @@ CONFIG = {
             "epochs" : 100,
             "patience" : 5,
             "loss_type" : "huber",
+            "clip" : 1, # Choose weight clip value for l2_weighted
             "lr" : 1e-3,
             "weight_decay" : 0,
             "dim_mults" : (1, 2, 4,),
@@ -86,6 +88,7 @@ CONFIG = {
             "epochs" : 1000,
             "patience" : 10,
             "loss_type" : "huber",
+            "clip" : 1, # Choose weight clip value for l2_weighted
             "lr" : 1e-3,
             "weight_decay" : 0,
             "dim_mults" : (1, 2, 4, 8,),
@@ -100,6 +103,7 @@ CONFIG = {
             "epochs" : 1000,
             "patience" : 10,
             "loss_type" : "l1",
+            "clip" : 1, # Choose weight clip value for l2_weighted
             "lr" : 1e-3,
             "weight_decay" : 0,
             "dim_mults" : (1, 2, 4, 8,),

@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from diffusion.forward_diffusion import q_sample, extract
 
 
-def p_losses(denoise_model, x_start, t, variance_dict, loss_type="l1", noise=None):
+def p_losses(denoise_model, x_start, t, variance_dict, loss_type="l1", noise=None, clip=1):
     if noise is None:
         noise = torch.randn_like(x_start)
 
@@ -28,7 +28,7 @@ def p_losses(denoise_model, x_start, t, variance_dict, loss_type="l1", noise=Non
         sigma_t_2 = extract(variance_dict["posterior_variance"], t, x_noisy.shape)
         weight = (beta_t**2)/(2 * sigma_t_2 * (1-beta_t) * (1-extract(variance_dict["alphas_cumprod"], t, x_noisy.shape)))
         # If weights are not clipped, training is unstable and loss goes to nan 
-        weight = torch.clip(weight, 0.0, 10.0)
+        weight = torch.clip(weight, 0.0, clip) # 1, 10, 100
         loss = torch.mean(weight * (noise - predicted_noise) ** 2)
 
         # weight = 2*torch.log(beta_t) - torch.log(2 * sigma_t_2) - torch.log(1-beta_t) - torch.log(1-extract(variance_dict["alphas_cumprod"], t, x_noisy.shape))

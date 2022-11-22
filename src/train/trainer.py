@@ -56,7 +56,7 @@ class Trainer:
                 # Algorithm 1 line 3: sample t uniformally for every example in the batch
                 t = torch.randint(0, self.cfg.get('T', 200), (batch_size,), device=device).long()
 
-                loss = p_losses(self.model, batch, t, self.variance_dict, self.cfg.get('loss_type', "huber"), None)
+                loss = p_losses(self.model, batch, t, self.variance_dict, self.cfg.get('loss_type', "huber"), None, self.cfg.get('clip', 1))
                 train_loss += loss.item()    
 
                 loss.backward()
@@ -111,7 +111,7 @@ class Trainer:
             # Algorithm 1 line 3: sample t uniformally for every example in the batch
             t = torch.randint(0, self.cfg.get('T', 200), (batch_size,), device=device).long()
 
-            loss += p_losses(self.model, batch, t, self.variance_dict, self.cfg.get('loss_type', "huber"), None).item()
+            loss += p_losses(self.model, batch, t, self.variance_dict, self.cfg.get('loss_type', "huber"), None, self.cfg.get('clip', 1)).item()
 
         self.model.train()
 
