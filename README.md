@@ -4,7 +4,7 @@ Diffusion models are primarily inspired from non-equilibrium thermodynamics and 
 
 The goal of this project is to get familiar with the Diffusion Models literature, learn about the advancements in the field, the techniques that result in its overall success and get hands-on experience implementing the pipeline. This repository is based on the implementations of (Niels Rogge, 2022) [https://huggingface.co/blog/annotated-diffusion](https://huggingface.co/blog/annotated-diffusion), (Wang, 2020) [https://github.com/lucidrains/denoising-diffusion-pytorch](https://github.com/lucidrains/denoising-diffusion-pytorch) and (Ho, 2019) [https://github.com/hojonathanho/diffusion](https://github.com/hojonathanho/diffusion) as references, that can generate good quality images from the data distribution and captures frequently used methods in the field. **Please note that I've tried to modularize the previous implementations to make it easier to understand and follow and build on top of and there are references added within the code.**
 
-Given the computational limitations, I mainly used MNIST, FashionMNIST and CIFAR10 in my experiments. But it's straight forwarded to use the code for other datasets as well.
+Given the computational limitations, I mainly used MNIST, FashionMNIST and CIFAR10 in my experiments. The datasets are accessed using `datasets` library and further information is available in `/src/data_loader.py`. But it's straight forwarded to use the code for other datasets as well.
 
 I analysed the effect of parameters such as length of the markov chain T , variance initialization of $\beta_t$ and different loss functions have on the images generated and the training process which helps us understand what techniques help improve the quality of the generated images. It was observed that increasing the length of the Markov Chain (T) results in improved quality of images. The model is fairly robust to different initializations of variance parameters $\beta_t$ and the modern scheduling techniques didn’t seem to have much impact in the image quality. 
 
@@ -33,9 +33,10 @@ make train_mnist
 make train_fashion_mnist
 make train_cifar10
 ```
+Note : Other parameters such as $T$, Variance schedule for $\beta_t$, Loss function, etc can be modified in `/src/config.py` file.
 
 At each epoch, we sample generated images and they are stored in `/results` folder. The models are saved in `/checkpoint` and once the training is over, the log file with loss values at each epoch is saved in `/log`. You can change these locations in the `/src/config.py` file.
 
-The code for training a vanilla CNN classifier to compute local metrics for FID and IS is available at `/examples/FashionMNIST_CNN_Classifier.ipynb`
+The code for training a vanilla CNN classifier to compute local metrics for FID and IS is available at `/examples/FashionMNIST_CNN_Classifier.ipynb` and all codes for computing evaluation metrics for the models from different experiments are available in the folder `/examples/`. 
 
 
