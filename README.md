@@ -36,6 +36,6 @@ make train_cifar10
 
 At each epoch, we sample generated images and they are stored in `/results` folder. The models are saved in `/checkpoint` and once the training is over, the log file with loss values at each epoch is saved in `/log`. You can change these locations in the `/src/config.py` file.
 
-The code for training a vanilla CNN classifier to compute local metrics for FID and IS is available at `\examples\`
+The code for training a vanilla CNN classifier to compute local metrics for FID and IS is available at `/examples/FashionMNIST_CNN_Classifier.ipynb`
 
 
